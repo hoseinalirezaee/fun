@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -33,6 +34,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "web.urls"
+
+AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
     {
@@ -53,7 +56,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "web.wsgi.application"
 
 connection_info = database_url.parse(
-    config("POSTGRES_URL", default="postgresql://postgres:postgres@localhost:7010/web")
+    config("POSTGRES_URL", default="postgresql://postgres:postgres@localhost:5432/web")
 )
 
 
