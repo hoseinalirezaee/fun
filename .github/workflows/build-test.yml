@@ -1,0 +1,43 @@
+name: Test
+
+on: push
+  
+jobs:
+  check-code-style:
+    runs-on: ubuntu-latest
+    container: "python:3.10"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: python -m pip install --upgrade pip setuptools flake8 isort black
+    - name: Lint with flake8
+      run: flake8 .
+    - name: Check import sorting
+      run: isort --check .
+    - name: Check Code format with Black
+      run: black --check .
+  test:
+    runs-on: ubuntu-latest
+    container: "python:3.10"
+    services:
+      postgres:
+        # Docker Hub image
+        image: postgres:14.2
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install dependencies
+      run: python -m pip install -r requirements.txt
+    - name: Run tests
+      env:
+        POSTGRES_URL: postgres://postgres:postgres@postgres:5432/test
+        DJANGO_SETTINGS_MODULE: web.settings
+      run: python manage.py test
